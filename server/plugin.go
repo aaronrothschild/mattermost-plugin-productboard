@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -149,7 +150,23 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 
 	var pb PBResponse
 
-	newPostURL := json.Unmarshal(resp.Request.Response.Body, &pb)
+	defer resp.Body.Close() // for good housekeeping
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		p.API.LogError("Unable to marshal err=" + err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	err = json.Unmarshal(data, &pb)
+	if err != nil {
+		p.API.LogError("Unable to Unmarshal err=" + err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	newPostURL := pb.Links.HTML
+
+	// newPostURL := json.Unmarshal(resp.Request.Response.Body, &pb)
 
 	// Post this to the channel with the URL/ID of the newly created Note
 
@@ -157,7 +174,7 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 		UserId:    userID,
 		ChannelId: docPost.ChannelId,
 		RootId:    rootID,
-		Message:   fmt.Sprintf(" [this post](%s) has been submitted to ProductBoard as a note for processing by a PM - you can comment or add info [here](%s).\n\n ", permalink.String(), newPostURL.string()),
+		Message:   fmt.Sprintf(" [this post](%s) has been submitted to ProductBoard as a note for processing by a PM - you can comment or add info [here](%s).\n\n ", permalink.String(), newPostURL),
 	}
 
 	_, appErr = p.API.CreatePost(post)
