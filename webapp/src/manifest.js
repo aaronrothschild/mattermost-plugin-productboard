@@ -2,9 +2,9 @@
 
 const manifest = JSON.parse(`
 {
-    "id": "com.mattermost.plugin-starter-template",
-    "name": "Plugin Starter Template",
-    "description": "This plugin serves as a starting point for writing a Mattermost plugin.",
+    "id": "com.mattermost.productboard",
+    "name": "ProductBoard Customer Feedback collector",
+    "description": "Gather all your customer feedback in one place, generate customer notes from Mattermost posts.",
     "version": "0.1.0",
     "min_server_version": "5.12.0",
     "server": {
@@ -21,7 +21,16 @@ const manifest = JSON.parse(`
     "settings_schema": {
         "header": "",
         "footer": "",
-        "settings": []
+        "settings": [
+            {
+                "key": "ProductBoardAPIKey",
+                "display_name": "ProductBoard API Key",
+                "type": "text",
+                "help_text": "Productboard API Key used to create notes",
+                "placeholder": "",
+                "default": null
+            }
+        ]
     }
 }
 `);

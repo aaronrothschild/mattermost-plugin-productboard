@@ -123,7 +123,7 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	p.API.LogInfo(string(b))
 	buf := bytes.NewBuffer(b)
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", "https://api.productboard.com/notes", buf)
@@ -132,7 +132,8 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	req.Header.Add("Authorization", "Bearer: "+config.ProductBoardAPIKey)
+	req.Header.Add("Authorization", "Bearer "+config.ProductBoardAPIKey)
+	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		p.API.LogError("Unable to marshal err=" + err.Error())
@@ -158,6 +159,8 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	p.API.LogInfo(string(data))
+
 	err = json.Unmarshal(data, &pb)
 	if err != nil {
 		p.API.LogError("Unable to Unmarshal err=" + err.Error())
