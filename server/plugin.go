@@ -177,7 +177,7 @@ func (p *Plugin) handleCreate(w http.ResponseWriter, r *http.Request) {
 		UserId:    userID,
 		ChannelId: docPost.ChannelId,
 		RootId:    rootID,
-		Message:   fmt.Sprintf(" [this post](%s) has been submitted to ProductBoard as a note for processing by a PM - you can comment or add info [here](%s).\n\n ", permalink.String(), newPostURL),
+		Message:   fmt.Sprintf(" Thanks[the message](%s) has been submitted to ProductBoard as a new note for processing by a PM - you can comment or add info [here in ProductBoard](%s).\n Ping a Product Manager if you need an urgent reply. ", permalink.String(), newPostURL),
 	}
 
 	_, appErr = p.API.CreatePost(post)
